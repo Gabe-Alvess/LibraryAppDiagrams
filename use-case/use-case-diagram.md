@@ -12,7 +12,6 @@ title LIBRARY USE CASE
 (Search) as search
 (Borrow Book) as borrowBook
 (Renew Book) as renewBook
-(My Books) as myBooks
 (Return Book) as returnBook
 (Pay) as pay
 
@@ -24,24 +23,23 @@ user -- signUp
 user -- login
 user -- search
 user -- borrowBook
-user -- myBooks
+user -- renewBook
 user -- returnBook
 user -- pay
 
 search ..> borrowBook : <<Extends>>
-myBooks ..> renewBook : <<Extends>>
-login ...> signUp : <<Extends>>
+login ..> signUp : <<Extends>>
 
 borrowBook ...> login : <<Includes>>
-myBooks ...> login : <<Includes>>
+renewBook ...> login : <<Includes>>
 returnBook ...> login : <<Includes>>
 pay ...> login : <<Includes>>
 
 librarian -- addBook
 librarian -- removeBook
 
-addBook ....> login : <<Includes>>
-removeBook ....> login : <<Includes>>
+addBook ...> login : <<Includes>>
+removeBook ...> login : <<Includes>>
 
 @enduml
 
