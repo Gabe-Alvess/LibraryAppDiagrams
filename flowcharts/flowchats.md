@@ -11,12 +11,12 @@ repeat :Enter username and password;
 :Authentification;
 if(Authentification succeeded?) then (Yes)
 :User is logged in;
-stop
+end
 else (No)
 if (Account was found?) then (Yes)
-:Display error message;
+:Show error message;
 else (No)
-:Display sign up message;
+:Show sign up message;
 stop
 
 @enduml
@@ -37,7 +37,7 @@ repeat :Enter username and password;
 :Authentification;
 if(Authentification succeeded?) then (Yes)
 :Librarian is logged in;
-stop
+end
 else (No)
 if (Account was found?) then (Yes)
 :Show error message;
@@ -60,16 +60,16 @@ start
 :Sign up;
 :Enter username;
 repeat :Enter email;
-backward:Error message;
+backward :Error message;
 repeat while (Is email valid?) is (No)
 ->Yes;
 repeat :Enter password;
-backward:Error message;
+backward :Error message;
 repeat while (Is password valid?) is (No)
 ->Yes;
 :Generate Id;
 :Account created;
-stop
+end
 
 @enduml
 
@@ -83,6 +83,38 @@ stop
 title BORROW BOOK
 
 start
+if (Is user logged in?) then (No)
+:Show login message;
+stop
+else (Yes)
+if (Is book available?) then (No)
+:Show error message;
+stop
+else (Yes)
+if (Want to borrow?) then (yes)
+:Show success message;
+end
+else (No)
+:Cancel action;
+stop
+
+@enduml
+
+```
+
+```plantuml
+
+@startuml
+
+!theme amiga
+title RENEW BOOK
+
+start
+if (Is user logged in?) then (No)
+:Show login message;
+stop
+else (Yes)
+:Show user books list;
 
 @enduml
 

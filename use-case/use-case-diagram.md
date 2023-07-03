@@ -24,16 +24,16 @@ user -- signUp
 user -- login
 user -- search
 user -- borrowBook
-user -- renewBook
+user -- myBooks
 user -- returnBook
 user -- pay
 
 search ..> borrowBook : <<Extends>>
-renewBook ..> myBooks : <<Extends>>
+myBooks ..> renewBook : <<Extends>>
 login ...> signUp : <<Extends>>
 
 borrowBook ...> login : <<Includes>>
-renewBook ...> login : <<Includes>>
+myBooks ...> login : <<Includes>>
 returnBook ...> login : <<Includes>>
 pay ...> login : <<Includes>>
 
