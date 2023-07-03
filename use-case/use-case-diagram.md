@@ -1,11 +1,10 @@
-# LIBRARY USE CASE
-
 ```plantuml
 
 @startuml
 
 !theme amiga
 skinparam actorStyle awesome
+title LIBRARY USE CASE
 
 :USER: as user
 ( Login ) as login
