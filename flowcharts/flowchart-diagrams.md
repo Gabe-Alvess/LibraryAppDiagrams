@@ -88,6 +88,10 @@ if (Is user logged in?) then (No)
 :Show login message;
 stop
 else (Yes)
+repeat:User provides book info;
+backward:Error message;
+repeat while (Book found?) is (No)
+->Yes;
 if (Is book available?) then (No)
 :Show error message;
 stop
