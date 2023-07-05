@@ -12,13 +12,24 @@ Control AuthenticationService as service
 collections UserService as userservice
 database UserRepo as repo
 
-activate user
-activate menu
 
 user -> menu : user wants to login
-menu -> user : ask for username and password
-
-loop username or password incorrect
+activate user
+activate menu
+menu -> user : ask if user has an account
+alt user has no account
+    user -> menu : user answer is no
+    menu -> user : do you want to sign up?
+    alt user wants to register
+        user -> menu : user answer is yes
+        menu -> user : show sign up menu
+    else user don't want to register
+        user -> menu : user answer is no
+        menu -> user : you need an account to login
+    end
+else user has account
+    user -> menu : user answer is yes
+    menu -> user : ask for username and password
     user -> menu : user enters username and password
     deactivate user
     menu -> service : authenticateUser(username:Str, password:Str) : boolean
@@ -36,22 +47,15 @@ loop username or password incorrect
         menu -> user : user successfully logged in
         activate user
     else authentication failed
-        alt account not found
-            repo --> userservice : Optional<User> not present
-            userservice --> service :  Optional<User> not present
-            service --> menu : false
-            menu -> user : account not found! want to sign up?
-        else account found
-            repo --> userservice :  Optional<User> present
-            deactivate repo
-            userservice --> service :  Optional<User> present
-            deactivate userservice
-            service --> menu : false
-            deactivate service
-            menu -> user : username or password incorrect!
-            deactivate user
-            deactivate menu
-        end
+        repo --> userservice : Optional<User> not present
+        deactivate repo
+        userservice --> service :  Optional<User> not present
+        deactivate userservice
+        service --> menu : false
+        deactivate service
+        menu -> user : error message
+        deactivate user
+        deactivate menu
     end
 end
 
@@ -73,13 +77,15 @@ Control AuthenticationService as service
 collections LibrarianService as libservice
 database LibrarianRepo as repo
 
+lib -> menu : librarian wants to login
 activate lib
 activate menu
-
-lib -> menu : librarian wants to login
-menu -> lib : ask for username and password
-
-loop username or password incorrect
+menu -> lib : ask if librarian has an account
+alt librarian has no account
+    lib -> menu : librarian answer is no
+    menu -> lib : you need to be a librarian to login
+else librarian has account
+    menu -> lib : ask for username and password
     lib -> menu : librarian enters username and password
     deactivate lib
     menu -> service : authenticateLib(username:Str, password:Str) : boolean
@@ -97,22 +103,15 @@ loop username or password incorrect
         menu -> lib : librarian successfully logged in
         activate lib
     else authentication failed
-        alt account not found
-            repo --> libservice : Optional<Librarian> not present
-            libservice --> service :  Optional<Librarian> not present
-            service --> menu : false
-            menu -> lib : account not found! you're not a librarian
-        else account found
-            repo --> libservice :  Optional<Librarian> present
-            deactivate repo
-            libservice --> service :  Optional<Librarian> present
-            deactivate libservice
-            service --> menu : false
-            deactivate service
-            menu -> lib : username or password incorrect!
-            deactivate lib
-            deactivate menu
-        end
+        repo --> libservice : Optional<Librarian> not present
+        deactivate repo
+        libservice --> service :  Optional<Librarian> not present
+        deactivate libservice
+        service --> menu : false
+        deactivate service
+        menu -> lib : error message
+        deactivate lib
+        deactivate menu
     end
 end
 
