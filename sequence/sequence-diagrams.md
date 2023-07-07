@@ -276,6 +276,13 @@ end
 skinparam actorStyle awesome
 title RENEW BOOK
 
+Actor User as user
+Boundary Menu as menu
+Control BorrowedBookService as bbservice
+Database BorrowedBookRepo as bbrepo
+Control UserService as uservice
+Database UserRepo as urepo
+
 
 
 @enduml
