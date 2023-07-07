@@ -70,18 +70,22 @@ title SIGN UP
 
 start
 :Sign up;
+:Enter email;
 :Enter username;
-repeat:Enter email;
-backward:Error message;
-repeat while (Is email valid?) is (No)
-->Yes;
-repeat:Enter password;
-backward:Error message;
-repeat while (Is password valid?) is (No)
-->Yes;
-:Generate Id;
-:Account created;
-end
+:Enter password;
+if (Is email valid?) then (No)
+    :Show error message;
+    stop
+else (Yes)
+    :authentication;
+endif
+if (Authentication succeeded?) then (Yes)
+    :Show success message;
+    end
+else (No)
+    :Show error message;
+    stop
+endif
 
 @enduml
 
@@ -109,14 +113,9 @@ if (Is book available?) then (No)
     :Show error message;
     stop
 else (Yes)
-    if (Confirm borrow?) then (yes)
-        :Change book status;
-        :Show success message;
-        end
-    else (No)
-        :Cancel action;
-        stop
-    endif
+    :Change book status;
+    :Show success message;
+    end
 endif
 
 @enduml
@@ -141,17 +140,12 @@ else (Yes)
     repeat while (Book found?) is (No)
 endif
 ->Yes;
-if (Confirm renew?) then (No)
-    :Cancel Action;
-    stop
+if (Is due date expired?) then (No)
+    :Show success message;
+    end
 else (Yes)
-    if (Is due date expired?) then (No)
-        :Show success message;
-        end
-    else (Yes)
-        :Show error message;
-        stop
-    endif
+    :Show error message;
+    stop
 endif
 
 @enduml
@@ -176,19 +170,14 @@ else (Yes)
     repeat while (Book found?) is (No)
 endif
 ->Yes;
-if (Confirm return?) then (No)
-    :Cancel Action;
-    stop
+if (Is due date expired?) then (No)
+    :Change book status;
+    :Show success message;
+    end
 else (Yes)
-    if (Is due date expired?) then (No)
-        :Change book status;
-        :Show success message;
-        end
-    else (Yes)
-        :Add a fine and change book status;
-        :Show fine message;
-        stop
-    endif
+    :Add a fine and change book status;
+    :Show fine message;
+    stop
 endif
 
 @enduml
@@ -213,17 +202,12 @@ else (Yes)
     repeat while (Book with fine found?) is (No)
 endif
 ->Yes;
-if (Confirm payment?) then (No)
-    :Cancel Action;
-    stop
-else (Yes)
-    repeat:Open payment system;
-    backward:Error message;
-    repeat while (Is payment succeeded?) is (No)
-    ->Yes;
-    :Show success message;
-    end
-endif
+repeat:Open payment system;
+backward:Error message;
+repeat while (Is payment succeeded?) is (No)
+->Yes;
+:Show success message;
+end
 
 @enduml
 
