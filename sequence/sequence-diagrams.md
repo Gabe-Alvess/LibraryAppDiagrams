@@ -193,7 +193,7 @@ alt user is not logged in
     user -> menu : borrow book without login
     activate user
     activate menu
-    menu -> user : you must be logged in
+    menu -> user : erro! you must be logged in to borrow
     deactivate menu
 else user is logged in
     user -> menu : borrow book with login
@@ -283,7 +283,88 @@ Database BorrowedBookRepo as bbrepo
 Control UserService as uservice
 Database UserRepo as urepo
 
-
+alt user is not logged in
+    user -> menu : renew book without login
+    activate user
+    activate menu
+    menu -> user : error! you must be logged in to renew
+else user is logged in
+    user -> menu : renew book with login
+    menu -> user : ask for username and book id
+    user -> menu : user enters username and book id
+    deactivate user
+    menu -> bbservice : renewBorrowedBook(username:str, bookId:long) : boolean
+    deactivate menu
+    activate bbservice
+    bbservice -> bbrepo : getBorrowedBook(id:long) : Optional<BorrowedBook>
+    activate bbrepo
+    alt book not found
+        bbrepo --> bbservice : Optional<BorrowedBook> not present
+        deactivate bbrepo
+        bbservice --> menu : false
+        deactivate bbservice
+        activate menu
+        menu -> user : error! book not found
+        activate user
+        deactivate user
+    else book found
+        deactivate menu
+        bbrepo --> bbservice : optional<BorrowedBook> present
+        activate bbservice
+        activate bbrepo
+        deactivate bbrepo
+        bbservice -> uservice : getUser(username:str) : Optional<User>
+        activate uservice
+        uservice -> urepo : getUserName(username:str) : Optional<User>
+        activate urepo
+        alt user not found
+            urepo --> uservice : optional<User> not present
+            deactivate urepo
+            uservice --> bbservice : optional<User> not present
+            deactivate uservice
+            bbservice --> menu : false
+            deactivate bbservice
+            activate menu
+            activate user
+            menu -> user : error! user not found
+            deactivate menu
+            deactivate user
+        else user found
+            urepo --> uservice : optional<User> present
+            activate urepo
+            deactivate urepo
+            activate uservice
+            uservice --> bbservice : optional<User> present
+            deactivate uservice
+            activate bbservice
+            bbservice -> bbrepo : check if due date has expired
+            alt due date not expired
+                activate bbrepo
+                bbrepo --> bbservice : due date has not expired
+                deactivate bbrepo
+                bbservice --> menu : true
+                deactivate bbservice
+                activate menu
+                activate user
+                menu -> user : success! book renewed with 2 more weeks
+                deactivate menu
+                deactivate user
+            else due date expired
+                bbrepo --> bbservice : due date has expired
+                activate bbrepo
+                deactivate bbrepo
+                activate bbservice
+                bbservice --> menu : false
+                deactivate bbservice
+                activate menu
+                activate user
+                menu -> user : error! due date has expired
+                deactivate menu
+                deactivate user
+            end
+        end
+    end
+end
 
 @enduml
 
@@ -291,13 +372,103 @@ Database UserRepo as urepo
 
 ```plantuml
 
+' UPDATE TO RETURN BOOK IMPLEMENTATION
+
 @startuml
 
 !theme amiga
 skinparam actorStyle awesome
 title RETURN BOOK
 
+Actor User as user
+Boundary Menu as menu
+Control BorrowedBookService as bbservice
+Database BorrowedBookRepo as bbrepo
+Control UserService as uservice
+Database UserRepo as urepo
 
+alt user is not logged in
+    user -> menu : renew book without login
+    activate user
+    activate menu
+    menu -> user : error! you must be logged in to renew
+else user is logged in
+    user -> menu : renew book with login
+    menu -> user : ask for username and book id
+    user -> menu : user enters username and book id
+    deactivate user
+    menu -> bbservice : renewBorrowedBook(username:str, bookId:long) : boolean
+    deactivate menu
+    activate bbservice
+    bbservice -> bbrepo : getBorrowedBook(id:long) : Optional<BorrowedBook>
+    activate bbrepo
+    alt book not found
+        bbrepo --> bbservice : Optional<BorrowedBook> not present
+        deactivate bbrepo
+        bbservice --> menu : false
+        deactivate bbservice
+        activate menu
+        menu -> user : error! book not found
+        activate user
+        deactivate user
+    else book found
+        deactivate menu
+        bbrepo --> bbservice : optional<BorrowedBook> present
+        activate bbservice
+        activate bbrepo
+        deactivate bbrepo
+        bbservice -> uservice : getUser(username:str) : Optional<User>
+        activate uservice
+        uservice -> urepo : getUserName(username:str) : Optional<User>
+        activate urepo
+        alt user not found
+            urepo --> uservice : optional<User> not present
+            deactivate urepo
+            uservice --> bbservice : optional<User> not present
+            deactivate uservice
+            bbservice --> menu : false
+            deactivate bbservice
+            activate menu
+            activate user
+            menu -> user : error! user not found
+            deactivate menu
+            deactivate user
+        else user found
+            urepo --> uservice : optional<User> present
+            activate urepo
+            deactivate urepo
+            activate uservice
+            uservice --> bbservice : optional<User> present
+            deactivate uservice
+            activate bbservice
+            bbservice -> bbrepo : check if due date has expired
+            alt due date not expired
+                activate bbrepo
+                bbrepo --> bbservice : due date has not expired
+                deactivate bbrepo
+                bbservice --> menu : true
+                deactivate bbservice
+                activate menu
+                activate user
+                menu -> user : success! book renewed with 2 more weeks
+                deactivate menu
+                deactivate user
+            else due date expired
+                bbrepo --> bbservice : due date has expired
+                activate bbrepo
+                deactivate bbrepo
+                activate bbservice
+                bbservice --> menu : false
+                deactivate bbservice
+                activate menu
+                activate user
+                menu -> user : error! due date has expired
+                deactivate menu
+                deactivate user
+            end
+        end
+    end
+end
 
 @enduml
 
